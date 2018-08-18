@@ -29,6 +29,7 @@ class LongGame(models.Model):
 
     # Use the above method to generate a new ID
     game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default=getNewID.__func__)
+    game_name = models.CharField(max_length=100, default='')
 
     # Get start and end times.
     # Start day is a Monday at least 14 days in the future, ensuring a week of preregisters and a week of pregames.
@@ -53,7 +54,7 @@ class LongGame(models.Model):
     def __str__(self):
         start = self.start_date.strftime("%B")[:3] + ' ' + str(self.start_date.day)
         end = self.end_date.strftime("%B")[:3] + ' ' + str(self.end_date.day)
-        return self.game_ID + ": " + start + " - " + end
+        return self.game_ID + ": " + start + " - " + end + ": " + self.game_name
 
 
 # Possible states of players during a long game
