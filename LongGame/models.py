@@ -13,12 +13,19 @@ and makes the status of unrevealed OZs print as human.
 from datetime import datetime, timedelta
 from enum import Enum
 from random import choice, sample
-
+from django_auto_one_to_one import AutoOneToOneModel
 from django.db import models
 
 
 class LongGame(models.Model):
-    game_ID = "LG" + str("PLACEHOLDER")  # TODO Increment hex of most recent game
+    def getNewID(self):
+        last_game_ID = LongGame.objects.last().game_ID
+        new_ID = int(last_game_ID[2:],16) + 1
+        return "LG" + new_ID
+
+    game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default="LG00000")
+
+
     # Get start and end times.
     # Start day is a Monday at least 14 days in the future, ensuring a week of preregisters and a week of pregames.
     # Start time set to midnight.
@@ -31,10 +38,10 @@ class LongGame(models.Model):
     end_date = start_date + timedelta(days=5, seconds=-1)
 
     # TODO unused right now
-    oz_reveal_by_time = True
-    oz_reveal_date = start_date + timedelta(days=2, seconds=-1)
-    oz_reveal_by_kills = True
-    oz_reveal_kills = 2
+    oz_reveal_by_time = models.BooleanField(default=True)
+    oz_reveal_date = models.DateTimeField(default=start_date + timedelta(days=2, seconds=-1))
+    oz_reveal_by_kills = models.BooleanField(default=True)
+    oz_reveal_kills = models.IntegerField(default=2)
 
     # Returns a String summary of the form:
     # "LG00002f: Sep 31 - Oct 4
@@ -56,14 +63,17 @@ class Status(Enum):
 
 
 # Each game has 1 Player List containing the the humans and zombies playing.
-class PlayerList(models.Model):
-    game = models.OneToOneField(LongGame, on_delete=models.CASCADE, primary_key=True)
+class PlayerList(AutoOneToOneModel(LongGame)):
+    long_game = models.OneToOneField(LongGame, primary_key=True , max_length=7, on_delete=models.CASCADE)
+    game_ID = models.CharField("Game ID", max_length=7, default=str(long_game)[:7])
+    def __str__(self):
+        return "PlayerList for " + str(self.long_game)
 
 
 # Player class that describes a specific player's status and information in 1 game.
 # Not to be confused with a user, and right now not linked to a user TODO
 # Values here are likely placeholders or defaults
-class Player(models.Model):
+"""class Player(models.Model):
     player_list = models.ForeignKey(PlayerList, on_delete=models.CASCADE)
     name = choice(["Ana", "Bob", "Carol", "Dan", "Eve"])
     status = Status.HUMAN
@@ -73,15 +83,17 @@ class Player(models.Model):
     killChars = "23456789QWERTYUPASDFGHJKZXCVBNM"
     while True:
         killcode = "MK"
-        killcode += sample(killChars, 5)
+        #killcode += str(sample(killChars, 5)) breaks stuff??
         # If killcode is unique for this player_list, stop
         # Note: won't check for uniqueness against the player being generated because it isn't saved yet?
         # Needs to be tested.
-        if killcode not in [player.killcode for player in player_list.objects.all()]:
-            break
+        if Player.objects.get(???):
+            break #TODO, doesn't work AttributeError: 'ForeignKey' object has no attribute 'objects'
+
 
     OZ_opt_in = False  # TODO get value from last game? from user profile?
     bandanna_number = -1  # TODO
+    """
 
 
 # Counts the statuses of each player
