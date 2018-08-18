@@ -126,7 +126,7 @@ def headcount(player_list):
 # There are X humans and Y zombies, counting the Z OZs as both human and zombie.
 def game_state(player_list):
     humans, zombies, ozs = headcount(player_list)
-    state = "There are " + humans + ozs + "humans and " + zombies + " zombies"
+    state = "There are " + humans + ozs + "humans and " + zombies + ozs + " zombies"
     if ozs > 0:
         state += ", counting the " + ozs + " OZ" + 's' if ozs > 1 else '' + " as both human and zombie"
     state += '.'
