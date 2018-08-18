@@ -5,5 +5,7 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return HttpResponse("Hello, world! The new HvZ server will be here soon.")
+    response = "Hello, world! The new HvZ server will be here soon. <br>" + \
+               '<a href ="/LongGame/">Long Games</a>'
+    return HttpResponse(response)
 
