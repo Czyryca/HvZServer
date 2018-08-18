@@ -18,13 +18,18 @@ from django.db import models
 
 
 class LongGame(models.Model):
-    def getNewID(self):
-        last_game_ID = LongGame.objects.last().game_ID
-        new_ID = int(last_game_ID[2:],16) + 1
-        self.game_ID = "LG" + new_ID
+
+    def LongGame(self):
+        game_ID = self.getNewID(self)
         self.save()
 
-    game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default="LG00000")
+    @staticmethod
+    def getNewID():
+        last_game_ID = LongGame.objects.last().game_ID
+        new_ID = int(last_game_ID[2:],16) + 1
+        return "LG" + str(new_ID).zfill(5)
+
+    game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default=getNewID.__func__)
 
 
     # Get start and end times.
@@ -67,7 +72,6 @@ class Status(Enum):
 # Each game has 1 Player List containing the the humans and zombies playing.
 class PlayerList(AutoOneToOneModel(LongGame)):
     long_game = models.OneToOneField(LongGame, primary_key=True , max_length=7, on_delete=models.CASCADE)
-    game_ID = models.CharField("Game ID", max_length=7, default=str(long_game)[:7])
     def __str__(self):
         return "PlayerList for " + str(self.long_game)
 
