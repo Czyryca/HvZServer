@@ -10,7 +10,7 @@
   Hi {{ user.username }}!
   <a href="{% url 'logout' %}">logout</a>
 {% else %}
-  You are not logged in. <a href="{% url 'login' %}">login</a>
+  You are not logged in. <a href="{% url 'login' %}">login</a> <a href="{% url 'signup' %}">sign up</a>
 {% endif %}
     {% block content %}
     {% endblock %}
