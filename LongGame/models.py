@@ -28,7 +28,7 @@ class LongGame(models.Model):
         return "LG" + str(hex(new_ID)[2:]).zfill(5)
 
     # Use the above method to generate a new ID
-    game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default=getNewID.__func__)
+    game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default=getNewID.__func__, editable=False)
     game_name = models.CharField(max_length=100, default='')
 
     # Get start and end times.
