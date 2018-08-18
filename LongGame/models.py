@@ -72,7 +72,7 @@ class Status(Enum):
 # Automatically generated when a user creates a Long Game.
 # Users shouldn't need to know this exists.
 class PlayerList(AutoOneToOneModel(LongGame)):
-    long_game = models.OneToOneField(LongGame, primary_key=True, max_length=7, on_delete=models.CASCADE)
+    long_game = models.OneToOneField(LongGame, primary_key=True, max_length=7, on_delete=models.CASCADE, editable=False)
 
     def __str__(self):
         return "PlayerList for " + str(self.long_game)
