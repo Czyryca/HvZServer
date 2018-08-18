@@ -20,16 +20,15 @@ from django.db import models
 class LongGame(models.Model):
 
     # Game IDs have the format "LG#####", where # is hexadecimal
-    # New games increment #####
+    # New games increment ##### of the last game
     @staticmethod
     def getNewID():
         last_game_ID = LongGame.objects.last().game_ID
-        new_ID = int(last_game_ID[2:],16) + 1
+        new_ID = int(last_game_ID[2:], 16) + 1
         return "LG" + str(hex(new_ID)[2:]).zfill(5)
 
     # Use the above method to generate a new ID
     game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default=getNewID.__func__)
-
 
     # Get start and end times.
     # Start day is a Monday at least 14 days in the future, ensuring a week of preregisters and a week of pregames.
@@ -50,7 +49,7 @@ class LongGame(models.Model):
     oz_reveal_kills = models.IntegerField(default=2)
 
     # Returns a String summary of the form:
-    # "LG00002f: Sep 31 - Oct 4
+    # "LG0002f: Sep 31 - Oct 4
     def __str__(self):
         start = self.start_date.strftime("%B")[:3] + ' ' + str(self.start_date.day)
         end = self.end_date.strftime("%B")[:3] + ' ' + str(self.end_date.day)
@@ -69,8 +68,11 @@ class Status(Enum):
 
 
 # Each game has 1 Player List containing the the humans and zombies playing.
+# Automatically generated when a user creates a Long Game.
+# Users shouldn't need to know this exists.
 class PlayerList(AutoOneToOneModel(LongGame)):
-    long_game = models.OneToOneField(LongGame, primary_key=True , max_length=7, on_delete=models.CASCADE)
+    long_game = models.OneToOneField(LongGame, primary_key=True, max_length=7, on_delete=models.CASCADE)
+
     def __str__(self):
         return "PlayerList for " + str(self.long_game)
 
