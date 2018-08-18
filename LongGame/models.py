@@ -19,16 +19,15 @@ from django.db import models
 
 class LongGame(models.Model):
 
-    def LongGame(self):
-        game_ID = self.getNewID(self)
-        self.save()
-
+    # Game IDs have the format "LG#####", where # is hexadecimal
+    # New games increment #####
     @staticmethod
     def getNewID():
         last_game_ID = LongGame.objects.last().game_ID
         new_ID = int(last_game_ID[2:],16) + 1
-        return "LG" + str(new_ID).zfill(5)
+        return "LG" + str(hex(new_ID)[2:]).zfill(5)
 
+    # Use the above method to generate a new ID
     game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default=getNewID.__func__)
 
 
