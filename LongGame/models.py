@@ -21,7 +21,8 @@ class LongGame(models.Model):
     def getNewID(self):
         last_game_ID = LongGame.objects.last().game_ID
         new_ID = int(last_game_ID[2:],16) + 1
-        return "LG" + new_ID
+        self.game_ID = "LG" + new_ID
+        self.save()
 
     game_ID = models.CharField(max_length=7, primary_key=True,unique=True,default="LG00000")
 
@@ -31,13 +32,14 @@ class LongGame(models.Model):
     # Start time set to midnight.
     start_date = datetime.now()
     day_of_week = start_date.isoweekday()  # Monday == 1, Sunday == 7
-    start_date += timedelta(days=21 - day_of_week)  # += 14 through 20
+    start_date += timedelta(days=21 - day_of_week+1)  # += 15 through 21
     start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)  # midnight
 
     # end date is Friday at 11:59:59
     end_date = start_date + timedelta(days=5, seconds=-1)
+    start_field = models.DateTimeField(verbose_name="start time", default=start_date)
+    end_field = models.DateTimeField(verbose_name="End time", default=start_date + timedelta(days=5, seconds=-1))
 
-    # TODO unused right now
     oz_reveal_by_time = models.BooleanField(default=True)
     oz_reveal_date = models.DateTimeField(default=start_date + timedelta(days=2, seconds=-1))
     oz_reveal_by_kills = models.BooleanField(default=True)
